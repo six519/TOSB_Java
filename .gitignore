@@ -13,7 +13,7 @@ tomcat
 *.dmg
 *.gz
 *.iso
-*.jar
+#*.jar
 *.rar
 *.tar
 *.zip
@@ -32,9 +32,9 @@ target/
 .idea/
 
 # eclipse project file
-.settings/
-.classpath
-.project
+#.settings/
+#.classpath
+#.project
 
 # NetBeans specific
 nbproject/private/
