@@ -53,6 +53,7 @@ public class TOSClient implements Runnable {
 	private boolean loggedIn = false;
 	public boolean startProcess = false;
 	private HashMap<String, Friend> friendsList = new HashMap<String, Friend>();
+	private ArrayList<Friend> friendsRequest = new ArrayList<Friend>();
 
 	private final AtomicBoolean running = new AtomicBoolean(false);
 	private static final String TOS_HOST = "live4.tos.blankmediagames.com";
@@ -135,6 +136,7 @@ public class TOSClient implements Runnable {
 	public void stop() {
 		loggedIn = false;
 		running.set(false);
+		startProcess = false;
 	}
 	
 	public void setDisplayText(String msg) {
@@ -181,6 +183,15 @@ public class TOSClient implements Runnable {
 		sb.append("</ul>");
 		setDisplayText(sb.toString());
 	}
+	
+	public void listFriendRequests() {
+		if(friendsRequest.size() > 0) {
+			System.out.println("The request count is:");
+			System.out.println(friendsRequest.size());
+		} else {
+			setDisplayText("<b><span style=\"color: red;\">No friend requests...</span></b>");
+		}
+	}
 
 	@Override
 	public void run() {
@@ -188,7 +199,7 @@ public class TOSClient implements Runnable {
 		StringBuilder sb = new StringBuilder();
 		int nullCount = 0;
 		boolean gotFriendsList = false;
-		ArrayList<Friend> friendsRequest = new ArrayList<Friend>();
+		friendsRequest.clear();
 		friendsList.clear();
 		
 		while(running.get()) {
@@ -223,7 +234,6 @@ public class TOSClient implements Runnable {
 						
 						if(sb.toString().contains(Character.toString((char)hex2Decimal("01"))) || sb.toString().contains(Character.toString((char)hex2Decimal("03")))) {
 							//friends list
-							System.out.println(sb.toString());
 							String[] splittedInfos = sb.toString().split(",");
 							int countInfo = 0;
 							String currentUser = "";
@@ -256,10 +266,22 @@ public class TOSClient implements Runnable {
 							
 						} else {
 							//friends request
+							String[] requests = sb.toString().split("\\*");
+							for(String request : requests) {
+								String[] info = request.split(",");
+								if(info.length > 1) {
+									friendsRequest.add(new Friend(info[0].replace(Character.toString((char)hex2Decimal("15")), ""), false, info[1]));
+								}
+							}	
 						}
 						
 					} else if(gotFriendsList) {
-						
+						if(startProcess) {
+							
+						} else {
+							listFriendRequests();
+							startProcess = true;
+						}
 					}
 					
 					sb.setLength(0);
