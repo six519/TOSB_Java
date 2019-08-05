@@ -185,9 +185,17 @@ public class TOSClient implements Runnable {
 	}
 	
 	public void listFriendRequests() {
-		if(friendsRequest.size() > 0) {
-			System.out.println("The request count is:");
-			System.out.println(friendsRequest.size());
+		if(friendsRequest.size() > 0) {		
+			StringBuilder sb = new StringBuilder();
+			
+			setDisplayText("<u style=\"color:orange;\"><h3>Your friends requests:</h3></u>");
+			sb.append("<ul>");
+			for(Friend friendRequest: friendsRequest) {				
+				sb.append("<li><strong><span style=\"color:violet;\">" + friendRequest.username + "</span></strong> with ID: <strong><span style=\"color:purple;\">" + friendRequest.id + "</span></strong>");
+			}
+			sb.append("</ul>");
+			setDisplayText(sb.toString());
+			
 		} else {
 			setDisplayText("<b><span style=\"color: red;\">No friend requests...</span></b>");
 		}

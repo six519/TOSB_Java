@@ -125,6 +125,18 @@ public class TOSBot implements KeyListener {
 					client.stop();
 				}
 				System.exit(0);
+			} else if(commands[0].equals("/listf")) {
+				if(client.startProcess) {
+					client.listFriends();
+				} else {
+					setDisplayText("<b><span style=\"color: red;\">You need to login first to issue the command...</span></b>");
+				}
+			} else if(commands[0].equals("/listfr")) {
+				if(client.startProcess) {
+					client.listFriendRequests();
+				} else {
+					setDisplayText("<b><span style=\"color: red;\">You need to login first to issue the command...</span></b>");
+				}
 			} else {
 				setDisplayText("<b><span style=\"color: red;\">Invalid command...</span></b>");
 			}
