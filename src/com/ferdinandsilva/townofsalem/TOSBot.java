@@ -6,6 +6,7 @@ import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -73,6 +74,7 @@ public class TOSBot implements KeyListener {
 
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		commandText = new Text(shell, SWT.SINGLE | SWT.BORDER);
+		commandText.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 		commandText.setLayoutData(gridData);
 		
 		commandText.addKeyListener(this);

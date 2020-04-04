@@ -58,7 +58,7 @@ public class TOSClient implements Runnable {
 	private final AtomicBoolean running = new AtomicBoolean(false);
 	private static final String TOS_HOST = "live4.tos.blankmediagames.com";
 	private static final int TOS_PORT = 3600;
-	private static final String TOS_BUILD = "11704";
+	private static final String TOS_BUILD = "12909";
 	private static final String TOS_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAziIxzMIz7ZX4KG5317Sm\nVeCt9SYIe/+qL3hqP5NUX0i1iTmD7x9hFR8YoOHdAqdCJ3dxi3npkIsO6Eoz0l3e\nH7R99DX16vbnBCyvA3Hkb1B/0nBwOe6mCq73vBdRgfHU8TOF9KtUOx5CVqR50U7M\ntKqqc6M19OZXZuZSDlGLfiboY99YV2uH3dXysFhzexCZWpmA443eV5ismvj3Nyxv\nRk/4ushZV50vrDjYiInNEj4ICbTNXQULFs6Aahmt6qmibEC6bRl0S4TZRtzuk2a3\nTpinLJooDTt9s5BvRRh8DLFZWrkWojgrzS0sSNcNzPAXYFyTOYEovWWKW7TgUYfA\ndwIDAQAB\n-----END PUBLIC KEY-----";
 	
 	public TOSClient(TOSBot bot) {
@@ -214,7 +214,7 @@ public class TOSClient implements Runnable {
 			try {
 				byte b = input.readByte();
 				int intMessage = (int)b;
-				//(int)b -30 instead of 226
+				//(int)b -30 instead of 	
 
 				if (intMessage == -30) {
 					if(!loggedIn) {
@@ -261,7 +261,7 @@ public class TOSClient implements Runnable {
 										stat = true;
 									}
 									
-									friendsList.put(currentID, new Friend(currentUser, stat));
+									friendsList.put(currentID, new Friend(currentUser, stat, currentID));
 									countInfo = 0;
 									currentID = "";
 									currentUser = "";
@@ -285,7 +285,20 @@ public class TOSClient implements Runnable {
 						
 					} else if(gotFriendsList) {
 						if(startProcess) {
-							
+							if (sb.toString().contains("*0*")) {
+									String message = sb.toString().replace(Character.toString((char)2), "");
+									String[] splitted_message = message.split("\\*0\\*");
+									
+									
+									Map<String, Friend> map = friendsList;
+									for(Map.Entry<String, Friend> entry : map.entrySet()) {
+										if (splitted_message[0].contains(entry.getValue().id)) {
+											setDisplayText("<strong><span style=\"color:indigo;\">" + entry.getValue().username + "</span></strong> says: <strong><span style=\"color:olive;\">" + splitted_message[1] + "</span></strong>");
+											break;
+										}
+									}
+									
+							}
 						} else {
 							listFriendRequests();
 							startProcess = true;
