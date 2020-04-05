@@ -15,22 +15,22 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-public class TOSBot implements KeyListener {
+public class TOSChat implements KeyListener {
 	private Display display;
 	private Shell shell;
 	private Browser browser;
 	private Text commandText;
 	private TOSClient client;
 	
-	public static final String APP_TITLE = "Town of Salem Bot";
+	public static final String APP_TITLE = "Town of Salem Chat Client";
 	public static final int APP_WIDTH = 800;
 	public static final int APP_HEIGHT = 500;
 
 	public static void main(String[] args) {
-		TOSBot tosBot = new TOSBot();
+		TOSChat tosChat = new TOSChat();
 	}
 	
-	public TOSBot() {
+	public TOSChat() {
 		display = new Display();
 		shell = new Shell(display);
 		shell.setSize(APP_WIDTH, APP_HEIGHT);
@@ -85,7 +85,7 @@ public class TOSBot implements KeyListener {
 			@Override
 			public void completed(ProgressEvent arg0) {
 				//start client
-				//client = new TOSClient(TOSBot.this);
+				//client = new TOSClient(TOSChat.this);
 				//client.start();
 				setDisplayText("Type <span style=\"color: blue;\"><i>/connect <b>USERNAME PASSWORD</b></i></span> ...");
 				setDisplayText("Type <span style=\"color: blue;\"><i>/help</i></span> for complete list of commands...");
@@ -96,7 +96,7 @@ public class TOSBot implements KeyListener {
 			}
 		});
 		
-		client = new TOSClient(TOSBot.this);
+		client = new TOSClient(TOSChat.this);
 	}
 	
 	public void setDisplayText(String text) {
@@ -139,6 +139,30 @@ public class TOSBot implements KeyListener {
 				} else {
 					setDisplayText("<b><span style=\"color: red;\">You need to login first to issue the command...</span></b>");
 				}
+			} else if (commands[0].matches("^(\\/msg:.+)$")) {
+				if(commands.length >= 2) {
+					if(client.startProcess) {
+						String[] splitted_string = commands[0].split(":");
+						if (splitted_string.length == 2) {
+							//valid command
+							StringBuilder sb = new StringBuilder();
+							for (int n=0; n<commands.length;n++) {
+								if (n == 0) {
+									continue;
+								}
+								sb.append(commands[n] + " ");
+							}
+							client.sendMessage(splitted_string[1], sb.toString().strip());
+						} else {
+							setDisplayText("<b><span style=\"color: red;\">Invalid command...</span></b>");
+						}
+					} else {
+						setDisplayText("<b><span style=\"color: red;\">You need to login first to issue the command...</span></b>");
+					}
+				} else {
+					setDisplayText("<b><span style=\"color: red;\">Invalid parameter/s...</span></b>");
+				}
+				
 			} else {
 				setDisplayText("<b><span style=\"color: red;\">Invalid command...</span></b>");
 			}

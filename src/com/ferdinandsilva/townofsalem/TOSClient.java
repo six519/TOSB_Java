@@ -45,7 +45,7 @@ public class TOSClient implements Runnable {
 		}
 	}
 	
-	private TOSBot tosBot;
+	private TOSChat tosChat;
 	private Thread thread;
 	private Socket socket;
 	private DataInputStream input;
@@ -61,8 +61,8 @@ public class TOSClient implements Runnable {
 	private static final String TOS_BUILD = "12909";
 	private static final String TOS_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAziIxzMIz7ZX4KG5317Sm\nVeCt9SYIe/+qL3hqP5NUX0i1iTmD7x9hFR8YoOHdAqdCJ3dxi3npkIsO6Eoz0l3e\nH7R99DX16vbnBCyvA3Hkb1B/0nBwOe6mCq73vBdRgfHU8TOF9KtUOx5CVqR50U7M\ntKqqc6M19OZXZuZSDlGLfiboY99YV2uH3dXysFhzexCZWpmA443eV5ismvj3Nyxv\nRk/4ushZV50vrDjYiInNEj4ICbTNXQULFs6Aahmt6qmibEC6bRl0S4TZRtzuk2a3\nTpinLJooDTt9s5BvRRh8DLFZWrkWojgrzS0sSNcNzPAXYFyTOYEovWWKW7TgUYfA\ndwIDAQAB\n-----END PUBLIC KEY-----";
 	
-	public TOSClient(TOSBot bot) {
-		tosBot = bot;
+	public TOSClient(TOSChat bot) {
+		tosChat = bot;
 	}
 	
 	private String encryptPassword(String password) {
@@ -103,7 +103,7 @@ public class TOSClient implements Runnable {
 	}
 	
 	public void start(String username, String password){
-		tosBot.setDisplayText("Connecting to: <b><span style=\"color: green;\">" + TOS_HOST + ":" + TOS_PORT + "</span></b>...");
+		tosChat.setDisplayText("Connecting to: <b><span style=\"color: green;\">" + TOS_HOST + ":" + TOS_PORT + "</span></b>...");
 
 		try {
 			socket = new Socket(TOS_HOST, TOS_PORT);
@@ -117,10 +117,10 @@ public class TOSClient implements Runnable {
 			thread = new Thread(this);
 			thread.start();
 		} catch (UnknownHostException e) {
-			tosBot.setDisplayText("<b><span style=\"color: red;\">Unable to connect to server...</span></b>");
+			tosChat.setDisplayText("<b><span style=\"color: red;\">Unable to connect to server...</span></b>");
 			stop();
 		} catch (IOException e) {
-			tosBot.setDisplayText("<b><span style=\"color: red;\">Unexpected I/O error occurred...</span></b>");
+			tosChat.setDisplayText("<b><span style=\"color: red;\">Unexpected I/O error occurred...</span></b>");
 			stop();
 		}
 		
@@ -143,7 +143,7 @@ public class TOSClient implements Runnable {
 		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				tosBot.setDisplayText(msg);
+				tosChat.setDisplayText(msg);
 			}
 		});	
 	}
@@ -199,6 +199,30 @@ public class TOSClient implements Runnable {
 		} else {
 			setDisplayText("<b><span style=\"color: red;\">No friend requests...</span></b>");
 		}
+	}
+	
+	public void sendMessage(String username, String message) {
+		boolean sent = false;
+		
+		Map<String, Friend> map = friendsList;
+		for(Map.Entry<String, Friend> entry : map.entrySet()) {
+			if(username.equals(entry.getValue().username)) {
+				
+				String pm = Character.toString((char)29) + username + "*" + message + Character.toString((char)0);
+				try {
+					output.write(pm.getBytes());
+					sent = true;
+					break;
+				} catch (IOException e) {
+					break;
+				}
+			}
+		}
+		
+		if (sent) {
+			setDisplayText("<strong><span style=\"color:gold;\">You</span></strong> says: <strong><span style=\"color:yellowgreen;\">" + message + "</span></strong>");
+		}
+		
 	}
 
 	@Override
